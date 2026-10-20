@@ -30,6 +30,29 @@ Some work needs more context than a single conversation. We also maintain:
 
 Each repository explains its requirements and has its own license. The KARMEN LOOP kernel is proprietary and is distributed separately from the public source.
 
+## Small local tools
+
+These skill packages include Python helpers you can run on your own data. They use the standard library and accept JSON from a file or standard input. Each README has an example, installation steps, and tests.
+
+| Project | Use it for |
+| --- | --- |
+| [api-diagnostics](https://github.com/KarmenLoop/skill-api-diagnostics) | Classify API failures and decide whether a retry is appropriate |
+| [bug-repro](https://github.com/KarmenLoop/skill-bug-repro) | Keep reproduction steps and results together |
+| [calendar-slots](https://github.com/KarmenLoop/skill-calendar-slots) | Find meeting slots from supplied busy intervals |
+| [daily-brief](https://github.com/KarmenLoop/skill-daily-brief) | Fit ready tasks into a daily time budget |
+| [document-diff](https://github.com/KarmenLoop/skill-document-diff) | Compare document text, numbers, and line endings |
+| [file-manifest](https://github.com/KarmenLoop/skill-file-manifest) | Hash selected local files and find duplicate contents |
+| [follow-up-tracker](https://github.com/KarmenLoop/skill-follow-up-tracker) | Track due follow-ups and stop conditions |
+| [inbox-triage](https://github.com/KarmenLoop/skill-inbox-triage) | Sort message exports into reply and review queues |
+| [meeting-actions](https://github.com/KarmenLoop/skill-meeting-actions) | Check action items against transcript evidence |
+| [memory-ledger](https://github.com/KarmenLoop/skill-memory-ledger) | Reconcile sourced facts, corrections, and expiry |
+| [patch-risk-review](https://github.com/KarmenLoop/skill-patch-risk-review) | Summarize a Git diff and identify review areas |
+| [project-plan](https://github.com/KarmenLoop/skill-project-plan) | Order dependencies and estimate the critical path |
+| [task-checkpoint](https://github.com/KarmenLoop/skill-task-checkpoint) | Resume task records while preserving unknown outcomes |
+| [test-failure-triage](https://github.com/KarmenLoop/skill-test-failure-triage) | Compare JUnit reports for repeated and mixed outcomes |
+
+The helpers process the data you supply. They do not connect accounts, send messages, or book meetings.
+
 ## KARMEN BOT
 
 KARMEN BOT is a personal assistant we are still developing. The mobile app is not available yet. The bot inside Koder currently supports chat; it does not run tools or change files. Updates are on the [product page](https://karmenloop.com/en/karmen-bot.html).
