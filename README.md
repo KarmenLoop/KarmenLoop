@@ -1,60 +1,54 @@
 # KARMEN LOOP
 
-We build Koder, an AI assistant for coding and everyday work on your computer. You choose the model, open a project, and review changes before they are saved.
+English | [简体中文](README.zh-CN.md)
 
-[Website](https://karmenloop.com/en/index.html) · [Get started](https://karmenloop.com/en/tutorial.html) · [Downloads](https://karmenloop.com/en/download.html) · [Email](mailto:info@karmenloop.com)
+We build tools for working with AI, alongside small projects that stand on their own. Start with the job you need to finish, then check that project’s current download, guide, and license.
 
-## Koder
+[Website](https://karmenloop.com) · [Email](mailto:info@karmenloop.com)
 
-Use the desktop app for an editor and workbench, the CLI for terminal tasks and scripts, or the TUI for a full-screen terminal session. The SDK lets you use Koder from your own code.
+## Memory and tasks
 
-Koder does not include a model. Connect a provider you already use, or a local model. Your workspace stays on your computer; requests to a hosted model go to the provider you choose. File changes wait for your approval, and commands ask first by default.
+- [karmen-memory](https://github.com/KarmenLoop/karmen-memory) — Inspect and organize memories in a browser prototype.
+- [bot-orchestrator](https://github.com/KarmenLoop/bot-orchestrator) — Track dependencies, submissions, evidence, and review on a local task board.
+- [personal-agent-growth](https://github.com/KarmenLoop/personal-agent-growth) — Keep task reviews and handoff records in a shared private folder.
+- [user-behavior-personalization](https://github.com/KarmenLoop/user-behavior-personalization) — Maintain scoped preferences the user can inspect and correct; the host supplies storage.
 
-The desktop app is in beta. Current builds and availability are listed on the [download page](https://karmenloop.com/en/download.html).
+## Application and website delivery
 
-| Repository | Use it for |
-| --- | --- |
-| [koder-cli](https://github.com/KarmenLoop/koder-cli) | Terminal tasks, scripts, and CI |
-| [koder-sdk](https://github.com/KarmenLoop/koder-sdk) | TypeScript, JavaScript, and Python integrations |
-| [karmenbot](https://github.com/KarmenLoop/karmenbot) | A full-screen terminal session with chat app connections |
-| [koder-open-cli](https://github.com/KarmenLoop/koder-open-cli) | Configuring AI roles and working rules in the macOS preview |
-
-## Memory and agent tools
-
-Some work needs more context than a single conversation. We also maintain:
-
-- [Koder Personal Knowledge](https://github.com/KarmenLoop/koder-personal-knowledge), a local library for notes and reference files.
-- [User Behavior Personalization](https://github.com/KarmenLoop/user-behavior-personalization), a skill for remembering preferences you can inspect and correct.
-- [Koder Shared Memory](https://github.com/KarmenLoop/koder-shared-memory), a skill for context across linked chats and devices. The host supplies storage, identity checks, and sync.
-- [Bot Orchestrator](https://github.com/KarmenLoop/bot-orchestrator), a task board and skill for planning work, reviewing results, and resuming interrupted tasks.
-
-Each repository explains its requirements and has its own license. The KARMEN LOOP kernel is proprietary and is distributed separately from the public source.
+- [app-module-delivery](https://github.com/KarmenLoop/app-module-delivery) — Planning and acceptance for applications, extensions, and modules.
+- [fullstack-web-delivery](https://github.com/KarmenLoop/fullstack-web-delivery) — A website-delivery workflow with a runnable fictional business example.
 
 ## Small local tools
 
-These skill packages include Python helpers you can run on your own data. They use the standard library and accept JSON from a file or standard input. Each README has an example, installation steps, and tests.
+These MIT skills include Python standard-library helpers for the JSON you provide. No model account is needed to run them directly. Each has English and Chinese entry pages and a download-to-practice guide.
 
 | Project | Use it for |
 | --- | --- |
-| [api-diagnostics](https://github.com/KarmenLoop/skill-api-diagnostics) | Classify API failures and decide whether a retry is appropriate |
-| [bug-repro](https://github.com/KarmenLoop/skill-bug-repro) | Keep reproduction steps and results together |
-| [calendar-slots](https://github.com/KarmenLoop/skill-calendar-slots) | Find meeting slots from supplied busy intervals |
-| [daily-brief](https://github.com/KarmenLoop/skill-daily-brief) | Fit ready tasks into a daily time budget |
-| [document-diff](https://github.com/KarmenLoop/skill-document-diff) | Compare document text, numbers, and line endings |
-| [file-manifest](https://github.com/KarmenLoop/skill-file-manifest) | Hash selected local files and find duplicate contents |
-| [follow-up-tracker](https://github.com/KarmenLoop/skill-follow-up-tracker) | Track due follow-ups and stop conditions |
-| [inbox-triage](https://github.com/KarmenLoop/skill-inbox-triage) | Sort message exports into reply and review queues |
-| [meeting-actions](https://github.com/KarmenLoop/skill-meeting-actions) | Check action items against transcript evidence |
-| [memory-ledger](https://github.com/KarmenLoop/skill-memory-ledger) | Reconcile sourced facts, corrections, and expiry |
-| [patch-risk-review](https://github.com/KarmenLoop/skill-patch-risk-review) | Summarize a Git diff and identify review areas |
-| [project-plan](https://github.com/KarmenLoop/skill-project-plan) | Order dependencies and estimate the critical path |
-| [task-checkpoint](https://github.com/KarmenLoop/skill-task-checkpoint) | Resume task records while preserving unknown outcomes |
-| [test-failure-triage](https://github.com/KarmenLoop/skill-test-failure-triage) | Compare JUnit reports for repeated and mixed outcomes |
+| [api-diagnostics](https://github.com/KarmenLoop/skill-api-diagnostics) | Classify recorded API failures and check whether a retry fits the remaining budget. |
+| [bug-repro](https://github.com/KarmenLoop/skill-bug-repro) | Build bug reports from reproduction attempts, environment details, and evidence. |
+| [calendar-slots](https://github.com/KarmenLoop/skill-calendar-slots) | Find free calendar slots from busy intervals, meeting length, and buffers. |
+| [daily-brief](https://github.com/KarmenLoop/skill-daily-brief) | Fit ready tasks into a daily time budget while keeping blocked work visible. |
+| [document-diff](https://github.com/KarmenLoop/skill-document-diff) | Compare text revisions, changed numbers, and line endings with a local helper. |
+| [file-manifest](https://github.com/KarmenLoop/skill-file-manifest) | Record local file sizes, SHA-256 hashes, and duplicate groups for a handoff. |
+| [follow-up-tracker](https://github.com/KarmenLoop/skill-follow-up-tracker) | Sort follow-ups into due, scheduled, and stopped lists from explicit records. |
+| [inbox-triage](https://github.com/KarmenLoop/skill-inbox-triage) | Prioritize exported messages by reply status, age, VIP sender, and response target. |
+| [meeting-actions](https://github.com/KarmenLoop/skill-meeting-actions) | Verify meeting action items against transcript quotes, owners, and due dates. |
+| [memory-ledger](https://github.com/KarmenLoop/skill-memory-ledger) | Resolve scoped facts with provenance, corrections, expiry, and visible conflicts. |
+| [patch-risk-review](https://github.com/KarmenLoop/skill-patch-risk-review) | Summarize Git diffs by file, line counts, and areas that need closer review. |
+| [project-plan](https://github.com/KarmenLoop/skill-project-plan) | Order dependent tasks and calculate a critical path with explicit acceptance checks. |
+| [task-checkpoint](https://github.com/KarmenLoop/skill-task-checkpoint) | Rebuild task state from events and identify what needs verification before resuming. |
+| [test-failure-triage](https://github.com/KarmenLoop/skill-test-failure-triage) | Compare JUnit test outcomes across reports and flag mixed pass/fail observations. |
 
-The helpers process the data you supply. They do not connect accounts, send messages, or book meetings.
+The helpers process supplied records; sending mail, booking meetings, and connecting accounts require separate tools and authorization.
 
-## KARMEN BOT
+## Koder
 
-KARMEN BOT is a personal assistant we are still developing. The mobile app is not available yet. The bot inside Koder currently supports chat; it does not run tools or change files. Updates are on the [product page](https://karmenloop.com/en/karmen-bot.html).
+For current Koder and terminal product information, use the [website](https://karmenloop.com). Each product has its own releases and terms.
 
-For questions about Koder or an integration, write to [info@karmenloop.com](mailto:info@karmenloop.com). For a bug in one of these projects, open an issue in that repository.
+[koder-cli](https://github.com/KarmenLoop/koder-cli) · [koder-sdk](https://github.com/KarmenLoop/koder-sdk) · [karmenbot](https://github.com/KarmenLoop/karmenbot)
+
+## Documentation and support
+
+Open issues in the relevant repository with the version, actual steps, and result. Each project identifies its demonstrations, prototypes, and verified behavior.
+
+[Documentation and release conventions](docs/publishing.en.md)
