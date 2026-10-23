@@ -8,14 +8,14 @@ We build tools for working with AI, alongside small projects that stand on their
 
 ## Memory and tasks
 
-- [karmen-memory](https://github.com/KarmenLoop/karmen-memory) — Inspect and organize memories in a browser prototype.
+- [karmen-memory](https://github.com/KarmenLoop/karmen-memory) — Store local SQLite memories, control MCP access, and exchange encrypted offline replicas on a trusted LAN.
 - [bot-orchestrator](https://github.com/KarmenLoop/bot-orchestrator) — Track dependencies, submissions, evidence, and review on a local task board.
-- [personal-agent-growth](https://github.com/KarmenLoop/personal-agent-growth) — Keep task reviews and handoff records in a shared private folder.
-- [user-behavior-personalization](https://github.com/KarmenLoop/user-behavior-personalization) — Maintain scoped preferences the user can inspect and correct; the host supplies storage.
+- [personal-agent-growth](https://github.com/KarmenLoop/personal-agent-growth) — Save persistent task checkpoints and verify handoffs through local CLI and MCP adapters.
+- [user-behavior-personalization](https://github.com/KarmenLoop/user-behavior-personalization) — Keep sourced preferences locally, with scoped recall, corrections, and Codex/Cursor adapters.
 
 ## Application and website delivery
 
-- [app-module-delivery](https://github.com/KarmenLoop/app-module-delivery) — Planning and acceptance for applications, extensions, and modules.
+- [app-module-delivery](https://github.com/KarmenLoop/app-module-delivery) — Plan application modules and run registered acceptance checks through local CLI and MCP adapters.
 - [fullstack-web-delivery](https://github.com/KarmenLoop/fullstack-web-delivery) — A website-delivery workflow with a runnable fictional business example.
 
 ## Small local tools
@@ -52,3 +52,5 @@ For current Koder and terminal product information, use the [website](https://ka
 Open issues in the relevant repository with the version, actual steps, and result. Each project identifies its demonstrations, prototypes, and verified behavior.
 
 [Documentation and release conventions](docs/publishing.en.md)
+
+Choose **English** or **简体中文** at the top of each repository README. The two entry pages cover the same product version, setup path, and limits. Technical references and historical evidence retain their labeled original language; published installers keep their own language support.
