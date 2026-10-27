@@ -29,19 +29,25 @@ function text(target,copy,x,y,kind,color,maxWidth=390){
   }
 }
 
-export function renderCard({count,startedAt,lang='en',theme='dark',animated=true}){
-  if(typeof count!=='string'||!/^\d{1,19}$/.test(count)||BigInt(count)>9223372036854775807n)throw Error('Invalid count');
+export function renderCard({count,startedAt,lang='en',theme='dark',animated=true,recorded=false,repoCount=null,profileCount=null}){
+  if(typeof count!=='string'||!/^(0|[1-9]\d{0,39})$/.test(count))throw Error('Invalid count');
   if(!['en','zh-CN'].includes(lang)||!['light','dark'].includes(theme)||typeof animated!=='boolean')throw Error('Invalid render options');
   const date=startedAt===null?null:new Date(startedAt);
   if(startedAt!==null&&(!/^\d{4}-\d{2}-\d{2}T/.test(startedAt)||!Number.isFinite(date.getTime())))throw Error('Invalid start date');
   const color=data.foreground[theme],overlay=new Uint8Array(width*height),zh=lang==='zh-CN';
-  text(overlay,zh?'总浏览量':'Total profile views',300,44,'label',color);
+  text(overlay,recorded?(zh?'GitHub 累计浏览记录':'Recorded GitHub views'):(zh?'总浏览量':'Total profile views'),300,44,'label',color);
   text(overlay,BigInt(count).toLocaleString('en-US'),300,77,'number',color,390);
   const dateCopy=date?(zh?`自 ${date.getUTCFullYear()} 年 ${date.getUTCMonth()+1} 月 ${date.getUTCDate()} 日起`:
     `Since ${new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}).format(date)}`):
     (zh?'尚未开始':'Not started yet');
-  text(overlay,dateCopy,300,180,'detail',color);
-  text(overlay,zh?'按图片请求估算':'Estimated from image requests',300,208,'caption',color);
+  if(recorded){
+    text(overlay,repoCount===null||repoCount===undefined?(zh?'仓库流量待同步':'Repository sync pending'):(zh?`仓库 ${repoCount}  主页图片 ${profileCount}`:`Repositories ${repoCount} / Profile images ${profileCount}`),300,165,'detail',color);
+    text(overlay,dateCopy,300,192,'detail',color);
+    text(overlay,zh?'合并来源，可能重叠':'Combined sources; may overlap',300,220,'caption',color);
+  }else{
+    text(overlay,dateCopy,300,180,'detail',color);
+    text(overlay,zh?'按图片请求估算':'Estimated from image requests',300,208,'caption',color);
+  }
   const encoder=GIFEncoder(),frames=animated?data.frameCount:1,size=data.loopSize;
   for(let frame=0;frame<frames;frame++){
     const image=overlay.slice(),plane=planes.subarray(frame*size*size,(frame+1)*size*size);
