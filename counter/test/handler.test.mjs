@@ -53,11 +53,23 @@ test('unsupported routes, methods, and parameters never mutate the count',async(
   const {db,store}=await database();
   try{
     const handle=createHandler({store,render,production:true});
-    for(const path of ['/reset','/profile.gif?lang=xx','/profile.gif?theme=blue','/profile.gif?key=other','/profile.gif?lang=en&lang=zh-CN','/stats.json?reset=1','/profile.gif?motion=spin'])
+    for(const path of ['/reset','/profile.gif?lang=xx','/profile.gif?theme=blue','/profile.gif?key=other','/profile.gif?lang=en&lang=zh-CN','/stats.json?reset=1','/profile.gif?motion=spin','/profile.gif?constructor=x','/profile.gif?toString=x','/profile.gif?__proto__=x','/profile.gif?hasOwnProperty=x'])
       assert.ok((await handle(request(path))).status>=400,path);
     assert.equal((await handle(new Request('https://counter.example/profile.gif',{method:'POST'}))).status,405);
     assert.equal(await store.read(),null);
   }finally{await db.close();}
+});
+
+test('the edge guard answers HEAD before the origin can convert it to GET',async()=>{
+  const {default:guard}=await import('../netlify/edge-functions/head.js');
+  const response=await guard(new Request('https://counter.example/profile.gif?lang=en&theme=light',{method:'HEAD'}));
+  assert.equal(response.status,200);assert.equal(await response.text(),'');
+  assert.equal(response.headers.get('content-type'),'image/gif');
+  assert.equal(response.headers.get('x-counter-mode'),'head');
+  assert.match(response.headers.get('cache-control'),/no-store/);
+  assert.equal(await guard(request('/profile.gif')),undefined,'GET must continue to the origin');
+  const bad=await guard(new Request('https://counter.example/profile.gif?constructor=x',{method:'HEAD'}));
+  assert.equal(bad.status,400);
 });
 
 test('a preview deployment never increments the production record',async()=>{
