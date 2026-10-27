@@ -3,7 +3,7 @@ import gifenc from 'gifenc';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { deflateSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
-import { avatarProfile, buildAvatarMesh, projectSmoothAvatar, shadeAvatarPoint } from '../brand/loop.mjs';
+import { projectFluidLoop, shadeFluidLoop } from '../brand/fluid-loop.mjs';
 import { rasterize } from './rasterize.mjs';
 
 const { GIFEncoder, quantize, applyPalette }=gifenc;
@@ -14,23 +14,26 @@ if(!GlobalFonts.registerFromPath(fileURLToPath(new URL('tmp/inter-variable.ttf',
   throw Error('Download InterVariable.ttf to counter/tmp/inter-variable.ttf before building assets.');
 const chineseFont=process.env.COUNTER_CJK_FONT;
 if(chineseFont&&!GlobalFonts.registerFromPath(chineseFont,'Counter CJK'))throw Error('Cannot load COUNTER_CJK_FONT');
-const profile={...avatarProfile('karmen:mark','karmen'),tint:[88,95,111],accent:[160,174,195]};
-const mesh=buildAvatarMesh(profile,{segments:160,lanes:32});
-const size=512, count=60, delay=100;
+const size=640, count=120, delay=50, loopSize=260;
 const canvas=createCanvas(size,size),ctx=canvas.getContext('2d');
+const high=createCanvas(size*2,size*2),highCtx=high.getContext('2d');
 function draw(frame){
-  const angle=frame/count*Math.PI*2;
-  const faces=projectSmoothAvatar(mesh,profile,{time:2+1.1*Math.sin(angle),flowTime:4+1.1*Math.cos(angle),
-    pointer:{x:.12*Math.sin(angle),y:.07*Math.cos(angle)},roughness:.035});
-  const pixels=rasterize(faces,size,(normal,position)=>shadeAvatarPoint(normal,position,profile));
-  ctx.putImageData(new ImageData(pixels,size,size),0,0);return pixels;
+  const phase=frame/count*Math.PI*2;
+  const pixels=rasterize(projectFluidLoop({phase}),size*2,
+    (normal,position)=>shadeFluidLoop(normal,position,phase));
+  highCtx.putImageData(new ImageData(pixels,size*2,size*2),0,0);
+  ctx.clearRect(0,0,size,size);ctx.drawImage(high,0,0,size,size);
+  return ctx.getImageData(0,0,size,size).data;
 }
 // A shared palette keeps the reflections steady instead of flickering between frames.
-const sample=draw(0), opaque=[];
-for(let i=0;i<sample.length;i+=4)if(sample[i+3]>=128)opaque.push(sample[i],sample[i+1],sample[i+2],255);
+const opaque=[];
+for(const frame of [0,30,60,90]){
+  const sample=draw(frame);
+  for(let i=0;i<sample.length;i+=16)if(sample[i+3]>=128)opaque.push(sample[i],sample[i+1],sample[i+2],255);
+}
 const palette=[[255,0,255],...quantize(Uint8Array.from(opaque),252),[242,240,235],[29,28,26]];
 const foreground={dark:palette.length-2,light:palette.length-1};
-const gif=GIFEncoder(),small=createCanvas(180,180),smallCtx=small.getContext('2d');
+const gif=GIFEncoder(),small=createCanvas(loopSize,loopSize),smallCtx=small.getContext('2d');
 const planes=[];
 function indexed(rgba){
   const pixels=applyPalette(rgba,palette);
@@ -40,20 +43,20 @@ function indexed(rgba){
 for(let frame=0;frame<count;frame++){
   const rgba=draw(frame), pixels=indexed(rgba);
   gif.writeFrame(pixels,size,size,{palette:frame===0?palette:undefined,transparent:true,transparentIndex:0,delay,dispose:2,repeat:0});
-  smallCtx.clearRect(0,0,180,180);smallCtx.drawImage(canvas,0,0,180,180);
-  planes.push(indexed(smallCtx.getImageData(0,0,180,180).data));
+  smallCtx.clearRect(0,0,loopSize,loopSize);smallCtx.drawImage(high,0,0,loopSize,loopSize);
+  planes.push(indexed(smallCtx.getImageData(0,0,loopSize,loopSize).data));
   if(frame===0)await writeFile(new URL('public/karmen-loop.png',root),await canvas.encode('png'));
   if(frame%15===0)console.log(`Rendered ${frame+1}/${count} frames`);
 }
 gif.finish();await writeFile(new URL('public/karmen-loop.gif',root),gif.bytes());
 await writeFile(new URL('assets/loop-frames.bin',root),deflateSync(Buffer.concat(planes),{level:9}));
 
-const characters=new Set([...Array.from({length:95},(_,i)=>String.fromCharCode(32+i)).join(''),...'主页访问自起按图片请求估算年月日尚未开始']);
+const characters=new Set([...Array.from({length:95},(_,i)=>String.fromCharCode(32+i)).join(''),...'总浏览量主页访问自起按图片请求估算年月日尚未开始']);
 const atlas={};
-for(const [name,fontSize] of [['number',52],['label',18],['detail',12]]){
+for(const [name,fontSize] of [['number',76],['label',21],['detail',14],['caption',12]]){
   const glyphs={};
   for(const char of characters){
-    const glyph=createCanvas(80,80),g=glyph.getContext('2d');
+    const glyph=createCanvas(110,110),g=glyph.getContext('2d');
     g.font=`${name==='number'?'500':'400'} ${fontSize}px Inter, ${chineseFont?'Counter CJK, ':''}PingFang SC, sans-serif`;
     g.textBaseline='top';g.fillStyle='white';g.fillText(char,0,0);
     const width=Math.ceil(g.measureText(char).width),height=fontSize+8;
@@ -64,5 +67,5 @@ for(const [name,fontSize] of [['number',52],['label',18],['detail',12]]){
   }
   atlas[name]=glyphs;
 }
-await writeFile(new URL('assets/render-data.json',root),JSON.stringify({palette,foreground,frameCount:count,delay,loopSize:180,atlas}));
+await writeFile(new URL('assets/render-data.json',root),JSON.stringify({revision:'fluid-1.1.0',palette,foreground,frameCount:count,delay,loopSize,cardWidth:720,cardHeight:260,atlas}));
 console.log('Built transparent loop GIF, static PNG, indexed frames, and text atlas.');
