@@ -2,7 +2,7 @@
 
 English | [简体中文](2026-10-27-refractive-visit-counter-design.zh-CN.md)
 
-Status: proposed design. No counter service has been deployed.
+Status: approved by the owner on October 27, 2026. The owner's follow-up selects a transparent animated GIF and supplies the dark silver refractive form as the reference. No counter service has been deployed yet.
 
 ## Purpose and scope
 
@@ -10,11 +10,11 @@ Add an original animated visit card to the KarmenLoop GitHub profile. The owner 
 
 ## Appearance
 
-Use the website's three-lobed, deforming loop as the visual reference: warm gray metal, soft studio reflections, restrained movement, and a charcoal surface. Keep the count still and easy to read. The proposed card is 680 × 180, with the KARMEN LOOP name, a large count, a short label, and the refractive object to the right. It scales down within the README width.
+Use the website's three-lobed, deforming loop and the owner's supplied image as the visual reference: dark silver material, soft studio reflections, and restrained movement. The background is transparent, including the hole through the loop. Keep the count still and easy to read. The proposed card is 680 × 180, with the KARMEN LOOP name, a large count, a short label, and the refractive object to the right. It scales down within the README width. Supply a separate transparent loop GIF as well.
 
 English copy: **Profile views**, **Since {launch date}**, and **Estimated from image requests**. Chinese copy: **主页访问**, **自 {上线日期} 起**, and **按图片请求估算**. Use each language's normal date format. Do not claim a visitor identity, unique-person total, or live online status.
 
-The proposed image format is a self-contained SVG with native animation, no scripts, no remote fonts, and a readable static first frame. Respect reduced-motion preferences. Verify animation through GitHub's actual image proxy; if it does not play there, use an animated GIF with an equivalent static option. The animation conveys the brand rather than server health.
+The selected image format is GIF, rendered from the existing native geometry, with real transparency and a seamless loop. Provide light and dark foreground variants and a static image link: GIF cannot automatically respond to reduced-motion preferences. Verify animation through GitHub's actual image proxy. The animation conveys the brand rather than server health.
 
 ## Approaches
 
@@ -30,7 +30,7 @@ Store only the total, start time, and update time. The application does not stor
 
 ## Hosting proposal
 
-Use a separate Netlify service in the existing authenticated account, with a site-wide Netlify Blobs store configured for strong consistency and conditional writes. Bound write retries and report failure without resetting the total or displaying a fabricated zero. Keep credentials in hosting configuration. This platform choice is the implementer's proposal; the owner selected self-hosting, not a particular provider. Do not add paid services or replace any existing website deployment.
+Use a separate Netlify service in the existing authenticated account. Implementation research found that Netlify's current guidance excludes counters from Blobs, so use a database with an atomic increment instead. Report storage failure without resetting the total or displaying a fabricated zero. Keep credentials in hosting configuration. This platform choice is the implementer's proposal; the owner selected self-hosting, not a particular provider. Do not purchase a paid plan or replace any existing website deployment.
 
 ## Acceptance
 
