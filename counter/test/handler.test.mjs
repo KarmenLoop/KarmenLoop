@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { PGlite } from '@electric-sql/pglite';
@@ -93,13 +93,16 @@ test('storage failure returns 503 without a fabricated zero or internal secrets'
 });
 
 test('the one-time acceptance correction touches only the two identified test requests',async()=>{
-  const correction=await readFile(new URL('../netlify/database/migrations/202610270002_exclude_acceptance_requests.sql',import.meta.url),'utf8');
-  for(const [count,date,expected] of [['2','2026-10-27T08:01:49.028Z','0'],['3','2026-10-27T08:01:49.028Z','3'],['2','2026-10-28T08:01:49.028Z','2']]){
+  const directory=new URL('../netlify/database/migrations/',import.meta.url);
+  const corrections=await Promise.all((await readdir(directory)).filter(name=>name.endsWith('.sql')).sort().map(name=>readFile(new URL(name,directory),'utf8')));
+  for(const [count,date,expected] of [['2','2026-10-27T08:01:49.028Z','0'],['2','2026-10-27T08:01:49.028254Z','0'],['2','2026-10-27T08:01:49.028255Z','2'],['3','2026-10-27T08:01:49.028254Z','3'],['2','2026-10-28T08:01:49.028Z','2']]){
     const {db,store}=await database();
     try{
       await db.query('INSERT INTO profile_counter (id,count,started_at,updated_at) VALUES ($1,$2,$3,$3)',['karmenloop',count,date]);
-      await db.exec(correction);assert.equal((await store.read()).count,expected);
-      await db.exec(correction);assert.equal((await store.read()).count,expected,'reapplying must not subtract again');
+      for(const correction of corrections)await db.exec(correction);
+      assert.equal((await store.read()).count,expected);
+      for(const correction of corrections)await db.exec(correction);
+      assert.equal((await store.read()).count,expected,'reapplying must not subtract again');
     }finally{await db.close();}
   }
 });
