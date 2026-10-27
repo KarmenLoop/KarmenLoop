@@ -1,22 +1,25 @@
-# KarmenLoop profile counter
+# KarmenLoop recorded GitHub views
 
 English | [简体中文](README.zh-CN.md) · [Back to the profile](../README.md)
 
-A self-hosted profile image with KARMEN LOOP's original refractive form. The background and the opening through the loop are transparent. A travelling deformation moves through the surface at 20 frames per second in a six-second loop. The larger form sits beside the total profile views; the number stays still.
+A self-hosted view of activity across KarmenLoop's repositories, paired with our transparent, flowing silver form. Open [live totals](https://karmenloop-profile.netlify.app/?lang=en) to see numbers update without refreshing. The GitHub README shows an image snapshot and links to the live page.
 
-[Preview and downloads](https://karmenloop-profile.netlify.app) · [Transparent GIF](https://karmenloop-profile.netlify.app/karmen-loop.gif) · [Static PNG](https://karmenloop-profile.netlify.app/karmen-loop.png)
+[Transparent GIF](https://karmenloop-profile.netlify.app/karmen-loop.gif) · [Static PNG](https://karmenloop-profile.netlify.app/karmen-loop.png)
 
-## What the number means
+## What the total includes
 
-The total counts production image requests accepted by this service. It starts with the first request; no earlier traffic was imported. English and Chinese images, and both foreground colors, share one record. The service saves only the total and its start/update timestamps. It does not save IP addresses, browser identifiers, cookies, or visitor identities. Netlify may retain its normal infrastructure logs.
+The total adds two sources, shown separately on the live page:
 
-GitHub fetches README images through its Camo proxy and may cache them. A page opening may reuse a cached image, and automated requests may reach the service. Netlify also converts HEAD checks to GET before the application sees them, so those checks can count as image requests. Treat this as an estimate of profile views, not a count of unique people or users online. Use `/health`, `/stats.json`, or `/preview.gif` for monitoring. See [GitHub's image proxy documentation](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-anonymized-urls).
+- **Repository page views:** GitHub's official Traffic data for the owner's accessible repositories. The collector saves daily records, replacing each repository/day when GitHub updates it. Repeated imports do not add the same window again. Saved days remain after they age out of GitHub's 14-day API window.
+- **Profile-image requests:** the original counter, including its retained total and timestamps. Requests for the profile/account image continue to add to this record. Reading the live page, stats, previews, or health route does not add a view.
 
-GIF supports one transparent color rather than partial alpha, so its edges can look slightly different on light and dark backgrounds. The standalone PNG retains full alpha. GIF cannot follow a system's reduced-motion setting inside a README; use the static-view link when you prefer no animation.
+The sources can overlap. A repository visit can also load the counter image, so the combined number is **recorded views**, not unique visitors or a deduplicated page-view total. Earlier history that GitHub no longer provides cannot be reconstructed. Downloads followed by local or offline reading are outside GitHub's page-view data. Private repository names and individual traffic records are not exposed by public stats.
+
+GitHub updates repository traffic about hourly. The hosted page checks for available data every ten seconds while visible; it shows the last repository-sync time. It does not animate a number upward without a new source value. GitHub sanitizes README HTML and proxies/caches images, so an already-open README image cannot run this live client. See [GitHub Traffic](https://docs.github.com/en/rest/metrics/traffic), [update timing](https://docs.github.com/en/repositories/viewing-activity-and-data-for-your-repository/viewing-traffic-to-a-repository), and [image caching](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-anonymized-urls).
 
 ## Run locally
 
-Version **1.1.0** requires Node **22 or later**. From this repository:
+Version **1.2.0** requires Node **22 or later**:
 
 ```sh
 cd counter
@@ -25,20 +28,27 @@ npm test
 npm start
 ```
 
-Open `http://127.0.0.1:55942`. Local preview uses a clearly labeled sample count and never connects to production storage. The committed rendering assets are ready to use; rebuilding them is optional.
+Open `http://127.0.0.1:55942`. The local preview explicitly labels its sample totals and never reads or changes production storage. Rendering assets are committed and ready to use.
 
-## Host your own copy
+## Connect repository traffic
 
-Create a separate Netlify project from this folder and keep the included `netlify.toml`. The `@netlify/database` dependency provisions PostgreSQL; deployment applies the committed migration. Confirm your existing plan's limits before deploying. Do not put database URLs or account tokens in Git.
+Use a separate Netlify project with the included `netlify.toml`. `@netlify/database` provisions PostgreSQL and applies the migrations. The added tables preserve the original profile counter. The scheduled function collects repository traffic at minute 17 each hour, in UTC, on the current published production deploy only. Preview deployments never connect to production storage or run the collector.
 
-The production function uses Netlify's request context to enable counting only on a production deploy. Draft deployments show an empty, read-only preview and never connect to the production database. Keep preview deployments private. Use a separate database branch for storage acceptance tests. Make the production image reachable without login so GitHub can fetch it. The static assets and image requests use your hosting account's normal bandwidth and function/database allowance.
+The collector needs a dedicated GitHub fine-grained token for the KarmenLoop account, with **Metadata: read** and **Administration: read**, which GitHub requires for Traffic. Select all owned repositories if newly created repositories should be included. Store it as `GITHUB_TRAFFIC_TOKEN` for this Netlify project's production functions only. Keep it out of Git, logs, browser code, and chat. Do not replace it with a broad account-write token. Account credentials must be configured by the owner before scheduled sync can operate.
 
-The fixed routes are `/profile.gif` (counting), `/preview.gif` (read-only), `/stats.json` (read-only), and `/health`. Image options are `lang=en|zh-CN`, `theme=light|dark`, and `motion=animated|static`. There is no reset endpoint or selectable counter key.
+A collection must finish for every repository in its inventory before saving. HTTP failures, missing access, invalid data, and timeouts retain the last complete totals. Status becomes stale after a failed collection or three hours without a successful one. Before the first import, repository traffic is marked pending rather than fabricated as zero. Source corrections replace saved values, so a corrected total can decrease. Older concurrent collections cannot replace a newer accepted snapshot.
 
-## Maintain it
+Public stats expose only aggregate totals, source timestamps, coverage, and freshness. They do not expose repository identities, IP addresses, browser identifiers, cookies, or visitor identities. Netlify and GitHub retain their normal infrastructure logs. Check hosting and database allowances before enabling the service.
 
-Run `npm test` before deploying. Verify `/stats.json` before and after using `/preview.gif`, including HEAD requests to that preview route: the total must not change. Do not use HEAD on `/profile.gif` for monitoring: the hosting proxy converts it to GET. Exercise concurrent writes against an isolated database branch, never by sending bulk requests to the production image. Confirm persistence after deploying again. Update both profile languages together.
+## Routes and maintenance
 
-To rebuild artwork, place the official [Inter variable font](https://github.com/rsms/inter) at `tmp/inter-variable.ttf`, provide a Chinese font through `COUNTER_CJK_FONT` when the system has none, then run `npm run build:assets`. The build refines the site's three-lobed form with periodic surface flow, smooth reflective shading, and two-times supersampling. It exports 640 × 640 artwork and a 720 × 260 counter with 120 frames at 50 ms per frame. It produces the GIF, PNG, indexed animation, and text atlas. Font files and account credentials are not shipped with the renderer. The Inter license is retained in [brand/inter-license.txt](brand/inter-license.txt).
+- `/github.gif`: account image; adds a profile-image request and renders the combined total.
+- `/profile.gif`: compatible original image; adds a request and renders the original image-request total.
+- `/preview.gif`: read-only combined snapshot.
+- `/stats.json` and `/health`: read-only data and availability.
 
-If storage fails, the image endpoint returns HTTP 503 and does not invent a zero or reset the record. Restore database access and retry. Roll back the application deploy without deleting or replacing the aggregate table. To remove the profile image, remove the picture block and its static-view link from both READMEs; preserve stored history unless the owner explicitly requests deletion.
+Image options are `lang=en|zh-CN`, `theme=light|dark`, and `motion=animated|static`. English and Chinese use the same records. No public reset, import, or selectable counter key exists. Netlify can normalize HEAD checks to GET, so monitor `/stats.json`, `/health`, or `/preview.gif`, never either counting image.
+
+Run `npm test` before deploying. Verify read-only polling does not change counts, repeat imports are idempotent, history survives redeploys, and both languages show the same source definitions. Exercise storage writes against an isolated database branch. An unavailable service retains the last browser observation or returns 503; it does not invent a zero. Keep preview deployments private. Follow [Netlify's scheduled-function guide](https://docs.netlify.com/build/functions/scheduled-functions/) to inspect the schedule and invoke an authorized test run.
+
+The flowing form remains 640 × 640, with 120 frames at 50 ms each in a six-second loop. To rebuild, place the official [Inter variable font](https://github.com/rsms/inter) at `tmp/inter-variable.ttf`; set `COUNTER_CJK_FONT` if the system has no Chinese font. Run `npm run build:assets`, or `node scripts/build-assets.mjs --text-only` when changing only card text. The [Inter license](brand/inter-license.txt) is retained. GIF has one-bit transparency; the PNG retains full alpha. GIF cannot follow reduced-motion settings inside a README, so the static option remains available.

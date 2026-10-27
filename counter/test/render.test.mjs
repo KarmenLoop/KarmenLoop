@@ -61,3 +61,13 @@ test('the total remains readable and still while the form flows',()=>{
   const frame=new Uint8Array(720*260*4);reader.decodeAndBlitFrameRGBA(0,frame);
   assert.ok(frame.some((v,i)=>i%4===3&&Math.floor(i/4)%720>=300&&v===255));
 });
+
+test('account snapshots render both sources, pending state, and both languages',()=>{
+ for(const lang of ['en','zh-CN'])for(const repoCount of ['537',null]){
+  const bytes=renderCard({...input,count:'545',profileCount:'8',repoCount,recorded:true,lang,animated:false});
+  const reader=new GifReader(bytes);assert.equal(reader.width,720);assert.equal(reader.numFrames(),1);
+  const pixels=new Uint8Array(720*260*4);reader.decodeAndBlitFrameRGBA(0,pixels);
+  let sourceInk=0;for(let y=165;y<240;y++)for(let x=300;x<700;x++)sourceInk+=pixels[(y*720+x)*4+3]>0?1:0;
+  assert.ok(sourceInk>200,'the source explanation and history must be present');
+ }
+});
