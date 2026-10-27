@@ -22,7 +22,7 @@ An existing public counter offers fast setup and limited colors, but gives us le
 
 ## Counting and storage
 
-Count successful GET requests to the production image endpoint. HEAD, preview renders, health checks, test requests, and statistics reads do not increment it. Preview data is separate. English and Chinese endpoints share one record.
+Count GET requests accepted at the production image endpoint. Preview renders, health checks, isolated test requests, and statistics reads do not increment it. English and Chinese endpoints share one record. Hosted acceptance found that Netlify normalizes HEAD to GET before either edge or serverless functions; those requests cannot be distinguished safely and may count. Direct HEAD handling remains read-only, but production monitoring must use a read-only route. This replaces the earlier proposed guarantee that hosted HEAD checks never increment.
 
 Start at zero on the first production image request and save that date. Do not seed a historical total. GitHub proxies and caches README images, so this is an estimate of profile views, not an exact visitor measurement. Return cache-control headers that request revalidation without promising that every profile opening reaches our service.
 

@@ -10,7 +10,7 @@
 
 累计服务接受并持久保存的正式图片请求，从首次请求开始，不导入以前的流量。中英文图片与深浅色文字版本共用一条记录。服务只保存累计值及起始、更新时间，不保存 IP、浏览器标识、Cookie 或访客身份；Netlify 可能保留常规基础设施日志。
 
-GitHub 通过 Camo 代理读取 README 图片，也可能使用缓存；打开页面不一定触发一次新请求，自动程序也可能请求图片。因此数字是主页访问估计值，不是独立访客人数或实时在线人数。参见 [GitHub 图片代理说明](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-anonymized-urls)。
+GitHub 通过 Camo 代理读取 README 图片，也可能使用缓存；打开页面不一定触发一次新请求，自动程序也可能请求图片。Netlify 还会在应用收到请求前把 HEAD 检查转为 GET，这类检查也可能计入图片请求。因此数字是主页访问估计值，不是独立访客人数或实时在线人数。监测请使用 `/health`、`/stats.json` 或 `/preview.gif`。参见 [GitHub 图片代理说明](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-anonymized-urls)。
 
 GIF 只有单一透明色，不支持半透明，所以边缘在深浅背景上可能略有差异；单独的 PNG 保留完整透明通道。README 中的 GIF 无法跟随系统减少动态效果设置，不希望播放时可使用静态查看入口。
 
@@ -37,7 +37,7 @@ npm start
 
 ## 维护与恢复
 
-部署前运行 `npm test`。在访问 `/preview.gif` 和发送 HEAD 请求前后读取 `/stats.json`，累计值应保持不变。并发写入测试使用独立数据库分支，不向正式图片批量发送请求。再次部署后确认累计值仍在，中英文主页同步更新。
+部署前运行 `npm test`。在访问 `/preview.gif` 及对该预览接口发送 HEAD 请求前后读取 `/stats.json`，累计值应保持不变。不要对 `/profile.gif` 发 HEAD 来监测：托管代理会将其转换为 GET。并发写入测试使用独立数据库分支，不向正式图片批量发送请求。再次部署后确认累计值仍在，中英文主页同步更新。
 
 需要重新生成图像时，将官方 [Inter 可变字体](https://github.com/rsms/inter) 放到 `tmp/inter-variable.ttf`；系统没有中文字体时，通过 `COUNTER_CJK_FONT` 指定。随后运行 `npm run build:assets`。构建采用官网原生几何与材质，离线平滑渲染，生成 GIF、PNG、索引动画与文字图集。运行时不携带字体文件或账户凭据。Inter 许可保存在 [brand/inter-license.txt](brand/inter-license.txt)。
 

@@ -10,7 +10,7 @@ A self-hosted profile image with KARMEN LOOP's original refractive form. The bac
 
 The total counts production image requests accepted by this service. It starts with the first request; no earlier traffic was imported. English and Chinese images, and both foreground colors, share one record. The service saves only the total and its start/update timestamps. It does not save IP addresses, browser identifiers, cookies, or visitor identities. Netlify may retain its normal infrastructure logs.
 
-GitHub fetches README images through its Camo proxy and may cache them. A page opening may reuse a cached image, and automated requests may reach the service. Treat this as an estimate of profile views, not a count of unique people or users online. See [GitHub's image proxy documentation](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-anonymized-urls).
+GitHub fetches README images through its Camo proxy and may cache them. A page opening may reuse a cached image, and automated requests may reach the service. Netlify also converts HEAD checks to GET before the application sees them, so those checks can count as image requests. Treat this as an estimate of profile views, not a count of unique people or users online. Use `/health`, `/stats.json`, or `/preview.gif` for monitoring. See [GitHub's image proxy documentation](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-anonymized-urls).
 
 GIF supports one transparent color rather than partial alpha, so its edges can look slightly different on light and dark backgrounds. The standalone PNG retains full alpha. GIF cannot follow a system's reduced-motion setting inside a README; use the static-view link when you prefer no animation.
 
@@ -37,7 +37,7 @@ The fixed routes are `/profile.gif` (counting), `/preview.gif` (read-only), `/st
 
 ## Maintain it
 
-Run `npm test` before deploying. Verify `/stats.json` before and after using `/preview.gif` and HEAD: the total must not change. Exercise concurrent writes against an isolated database branch, never by sending bulk requests to the production image. Confirm persistence after deploying again. Update both profile languages together.
+Run `npm test` before deploying. Verify `/stats.json` before and after using `/preview.gif`, including HEAD requests to that preview route: the total must not change. Do not use HEAD on `/profile.gif` for monitoring: the hosting proxy converts it to GET. Exercise concurrent writes against an isolated database branch, never by sending bulk requests to the production image. Confirm persistence after deploying again. Update both profile languages together.
 
 To rebuild artwork, place the official [Inter variable font](https://github.com/rsms/inter) at `tmp/inter-variable.ttf`, provide a Chinese font through `COUNTER_CJK_FONT` when the system has none, then run `npm run build:assets`. The build uses the site's native geometry and material with smooth offline shading. It produces the GIF, PNG, indexed animation, and text atlas. Font files and account credentials are not shipped with the renderer. The Inter license is retained in [brand/inter-license.txt](brand/inter-license.txt).
 

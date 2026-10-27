@@ -60,18 +60,6 @@ test('unsupported routes, methods, and parameters never mutate the count',async(
   }finally{await db.close();}
 });
 
-test('the edge guard answers HEAD before the origin can convert it to GET',async()=>{
-  const {default:guard}=await import('../netlify/edge-functions/head.js');
-  const response=await guard(new Request('https://counter.example/profile.gif?lang=en&theme=light',{method:'HEAD'}));
-  assert.equal(response.status,200);assert.equal(await response.text(),'');
-  assert.equal(response.headers.get('content-type'),'image/gif');
-  assert.equal(response.headers.get('x-counter-mode'),'head');
-  assert.match(response.headers.get('cache-control'),/no-store/);
-  assert.equal(await guard(request('/profile.gif')),undefined,'GET must continue to the origin');
-  const bad=await guard(new Request('https://counter.example/profile.gif?constructor=x',{method:'HEAD'}));
-  assert.equal(bad.status,400);
-});
-
 test('a preview deployment never increments the production record',async()=>{
   const {db,store}=await database();
   try{
