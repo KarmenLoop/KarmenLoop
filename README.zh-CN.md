@@ -10,7 +10,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://karmenloop-profile.netlify.app/github.gif?lang=zh-CN&amp;theme=dark&amp;motion=animated">
-  <img src="https://karmenloop-profile.netlify.app/github.gif?lang=zh-CN&amp;theme=light&amp;motion=animated" width="720" height="260" alt="GitHub 累计浏览记录，合计仓库浏览和主页图片请求，两种来源可能重叠，搭配透明流动折光体">
+  <img src="https://karmenloop-profile.netlify.app/github.gif?lang=zh-CN&amp;theme=light&amp;motion=animated" width="720" alt="GitHub 累计浏览记录，合计仓库浏览和主页图片请求，两种来源可能重叠，搭配透明流动折光体">
 </picture>
 
 [自动更新统计](https://karmenloop-profile.netlify.app/?lang=zh-CN) · [静态查看](https://karmenloop-profile.netlify.app/preview.gif?lang=zh-CN&theme=light&motion=static) · [计数说明](counter/README.zh-CN.md)
