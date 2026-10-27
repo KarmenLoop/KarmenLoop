@@ -2,11 +2,15 @@ const API='https://api.github.com';
 const OWNER='KarmenLoop';
 function fail(code){throw new Error(`GitHub traffic: ${code}`);}
 function whole(value){return Number.isSafeInteger(value)&&value>=0;}
+export function trafficWindow(observedAt){
+  const to=new Date(observedAt).toISOString().slice(0,10);
+  return {from:new Date(Date.parse(to+'T00:00:00Z')-13*86400000).toISOString().slice(0,10),to};
+}
 export async function collectTraffic({token,baseURL=API,now=()=>new Date(),deadlineMs=23000,concurrency=6}={}){
   if(typeof token!=='string'||!token.trim())fail('credential missing');
   const base=new URL(baseURL);
   if(base.origin!==API&&!(base.protocol==='http:'&&['127.0.0.1','localhost'].includes(base.hostname)))fail('unsupported API origin');
-  const observedAt=now().toISOString(),signal=AbortSignal.timeout(deadlineMs);
+  const observedAt=now().toISOString(),window=trafficWindow(observedAt),signal=AbortSignal.timeout(deadlineMs);
   async function get(path){
     let response;
     try{response=await fetch(new URL(path,base),{headers:{accept:'application/vnd.github+json',authorization:`Bearer ${token}`,'X-GitHub-Api-Version':'2026-03-10'},signal,redirect:'error'});}catch{fail(signal.aborted?'deadline exceeded':'request failed');}
@@ -49,5 +53,5 @@ export async function collectTraffic({token,baseURL=API,now=()=>new Date(),deadl
       if(sum!==json.count)fail('incomplete traffic');
     }
   }));
-  return {observedAt,completedAt:now().toISOString(),repositoryCount:repositories.length,days};
+  return {observedAt,completedAt:now().toISOString(),repositoryCount:repositories.length,repositoryIds:repositories.map(repo=>String(repo.id)),window,days};
 }

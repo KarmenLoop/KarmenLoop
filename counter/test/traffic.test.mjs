@@ -21,7 +21,7 @@ test('collector follows inventory pages and reads every owned repository',async(
   if(url.pathname==='/user/repos')return response(res,url.searchParams.get('page')==='2'?[repos[1]]:[repos[0]],200,url.searchParams.get('page')==='2'?{}:{link:`<${base}/user/repos?affiliation=owner&per_page=100&page=2>; rel="next"`});
   response(res,{count:3,uniques:2,views:[{timestamp:'2026-10-26T00:00:00Z',count:3,uniques:2}]});
  });base=server.url;
- try{const result=await collectTraffic({token:'local-test-only',baseURL:base,now:()=>new Date(stamp)});assert.equal(result.repositoryCount,2);assert.equal(result.days.length,2);assert.equal(result.days.reduce((n,row)=>n+row.count,0),6);assert.equal(requests,4);assert.ok(result.days.every(row=>!('name' in row)));}finally{await server.close();}
+ try{const result=await collectTraffic({token:'local-test-only',baseURL:base,now:()=>new Date(stamp)});assert.equal(result.repositoryCount,2);assert.deepEqual(result.repositoryIds.sort(),['1','2']);assert.deepEqual(result.window,{from:'2026-10-14',to:'2026-10-27'});assert.equal(result.days.length,2);assert.equal(result.days.reduce((n,row)=>n+row.count,0),6);assert.equal(requests,4);assert.ok(result.days.every(row=>!('name' in row)));}finally{await server.close();}
 });
 
 test('failed, malformed, foreign, duplicate, or incomplete traffic never becomes a zero snapshot',async()=>{
@@ -42,8 +42,8 @@ test('traffic collection has a deadline and requires a credential',async()=>{
  try{await assert.rejects(()=>collectTraffic({token:'local-test-only',baseURL:server.url,deadlineMs:30}),/deadline|aborted|timeout/i);}finally{await server.close();}
 });
 
-async function database(){const db=new PGlite();await db.exec(await readFile(new URL('../netlify/database/migrations/202610270004_repository_traffic.sql',import.meta.url),'utf8'));return {db,store:createTrafficStore({query:async(sql,params)=>(await db.query(sql,params)).rows})};}
-const snapshot=(observedAt,days)=>({observedAt,completedAt:observedAt,repositoryCount:2,days});
+async function database(){const db=new PGlite();await db.exec(await readFile(new URL('../netlify/database/migrations/202610270004_repository_traffic.sql',import.meta.url),'utf8'));await db.exec(await readFile(new URL('../netlify/database/migrations/202610270005_traffic_coverage.sql',import.meta.url),'utf8'));return {db,store:createTrafficStore({query:async(sql,params)=>(await db.query(sql,params)).rows,expectedRepositoryIds:['1','2']})};}
+const snapshot=(observedAt,days,repositoryIds=['1','2'])=>({observedAt,completedAt:observedAt,repositoryCount:repositoryIds.length,repositoryIds,window:{from:'2026-10-14',to:'2026-10-27'},days});
 const day=(repositoryId,date,count)=>({repositoryId,day:date,count});
 
 test('daily upserts retain history, replace source corrections, and reject old overlapping imports',async()=>{
@@ -54,10 +54,10 @@ test('daily upserts retain history, replace source corrections, and reject old o
   await store.save(a);await store.save(a);assert.equal((await store.read()).count,'30');
   const b=snapshot('2026-10-27T11:00:00Z',[day('2','2026-10-26',23),day('1','2026-10-27',2)]);
   await store.save(b);assert.equal((await store.read()).count,'35');
-  await store.save(snapshot('2026-10-27T10:30:00Z',[day('2','2026-10-26',999)]));assert.equal((await store.read()).count,'35');
-  await store.save(snapshot('2026-10-27T12:00:00Z',[day('2','2026-10-26',21)]));assert.equal((await store.read()).count,'33');
-  await store.recordFailure('unavailable');const state=await store.read();assert.equal(state.count,'33');assert.equal(state.coveredRepositories,2);assert.equal(state.lastError,'unavailable');
-  await assert.rejects(()=>store.save(snapshot('2026-10-27T13:00:00Z',[day('2','2026-10-26',-1)])));assert.equal((await store.read()).count,'33');
+  await assert.rejects(()=>store.save(snapshot('2026-10-27T10:30:00Z',[day('2','2026-10-26',999)])),/rejected/i);assert.equal((await store.read()).count,'35');
+  await store.save(snapshot('2026-10-27T12:00:00Z',[day('2','2026-10-26',21)]));assert.equal((await store.read()).count,'31');
+  await store.recordFailure('2026-10-27T12:30:00Z');const state=await store.read();assert.equal(state.count,'31');assert.equal(state.coveredRepositories,2);assert.equal(state.lastError,'unavailable');
+  await assert.rejects(()=>store.save(snapshot('2026-10-27T13:00:00Z',[day('2','2026-10-26',-1)])));assert.equal((await store.read()).count,'31');
  }finally{await db.close();}
 });
 
@@ -87,5 +87,47 @@ test('account images combine official history with retained requests; stats poll
   const image=await (await get('/github.gif')).json();assert.equal(image.count,'546');assert.equal(image.repoCount,'537');assert.equal(image.profileCount,'9');assert.equal(image.recorded,true);
   const legacy=await (await get('/profile.gif')).json();assert.equal(legacy.count,'10');assert.equal(legacy.recorded,false);
   assert.equal((await (await get('/stats.json')).json()).count,'547');assert.equal((await trafficStore.read()).count,'537');
+ }finally{await db.close();}
+});
+
+
+test('coverage cannot shrink or swap a tracked repository even when the visible count stays the same',async()=>{
+ const {db,store}=await database();
+ try{
+  await assert.rejects(()=>store.save(snapshot(stamp,[],['1','3'])),/coverage|rejected/i);
+  await store.save(snapshot(stamp,[day('1','2026-10-26',10)],['1','2','3']));
+  await assert.rejects(()=>store.save(snapshot('2026-10-27T11:00:00Z',[],['1','2','4'])),/coverage|rejected/i);
+  assert.equal((await store.read()).count,'10');assert.equal((await store.read()).coveredRepositories,3);
+  await store.save(snapshot('2026-10-27T12:00:00Z',[day('1','2026-10-26',11)],['1','2','3','4']));
+  assert.equal((await store.read()).coveredRepositories,4);
+ }finally{await db.close();}
+});
+
+test('empty source days clear the authoritative window while retaining the rolling boundary and older history',async()=>{
+ const {db,store}=await database();
+ try{
+  await store.save(snapshot(stamp,[day('1','2026-10-13',7),day('1','2026-10-14',10),day('2','2026-10-26',20)]));
+  await store.save(snapshot('2026-10-27T11:00:00Z',[]));
+  assert.equal((await store.read()).count,'7');
+  await store.save(snapshot('2026-10-27T12:00:00Z',[day('1','2026-10-13',5)]));
+  assert.equal((await store.read()).count,'5');
+  await assert.rejects(()=>store.save({...snapshot('2026-10-27T13:00:00Z',[]),window:{from:'2026-01-01',to:'2026-10-27'}}),/window/i);
+  assert.equal((await store.read()).count,'5');
+ }finally{await db.close();}
+});
+
+test('failure status follows attempt start order rather than callback completion order',async()=>{
+ const {db,store}=await database();
+ try{
+  await store.save(snapshot(stamp,[day('1','2026-10-26',10)]));
+  await store.recordFailure('2026-10-27T09:00:00Z');
+  assert.equal((await store.read()).lastError,null);
+  await store.recordFailure('2026-10-27T11:00:00Z');
+  assert.equal((await store.read()).lastError,'unavailable');
+  await assert.rejects(()=>store.save(snapshot('2026-10-27T10:30:00Z',[day('1','2026-10-26',99)])),/rejected/i);
+  assert.equal((await store.read()).count,'10');
+  await store.save(snapshot('2026-10-27T12:00:00Z',[day('1','2026-10-26',12)]));
+  await store.recordFailure('2026-10-27T11:30:00Z');
+  assert.equal((await store.read()).lastError,null);assert.equal((await store.read()).count,'12');
  }finally{await db.close();}
 });

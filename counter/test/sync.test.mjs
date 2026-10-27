@@ -12,7 +12,7 @@ test('scheduled collector runs only on the published production deploy',async()=
 
 test('scheduled collection failure records status without saving a partial result or exposing details',async()=>{
  let failures=0;
- const handler=createScheduledTraffic({collect:async()=>{throw Error('credential-private-name');},store:{save:async()=>{throw Error('Should not save');},recordFailure:async()=>{failures++;}}});
+ const handler=createScheduledTraffic({now:()=>new Date('2026-10-27T10:00:00.000Z'),collect:async()=>{throw Error('credential-private-name');},store:{save:async()=>{throw Error('Should not save');},recordFailure:async attemptedAt=>{assert.equal(attemptedAt,'2026-10-27T10:00:00.000Z');failures++;}}});
  await assert.rejects(()=>handler(null,{deploy:{context:'production',published:true}}),error=>!error.message.includes('credential-private-name'));
  assert.equal(failures,1);
 });
