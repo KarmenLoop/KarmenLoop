@@ -10,7 +10,7 @@ KarmenLoop builds [Koder](https://karmenloop.com) and a family of open repositor
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://karmenloop-profile.netlify.app/github.gif?lang=en&amp;theme=dark&amp;motion=animated">
-  <img src="https://karmenloop-profile.netlify.app/github.gif?lang=en&amp;theme=light&amp;motion=animated" width="720" height="260" alt="Recorded GitHub views from repository traffic and profile-image requests, with a transparent flowing silver loop; the two sources may overlap">
+  <img src="https://karmenloop-profile.netlify.app/github.gif?lang=en&amp;theme=light&amp;motion=animated" width="720" alt="Recorded GitHub views from repository traffic and profile-image requests, with a transparent flowing silver loop; the two sources may overlap">
 </picture>
 
 [Live totals](https://karmenloop-profile.netlify.app/?lang=en) · [Static view](https://karmenloop-profile.netlify.app/preview.gif?lang=en&theme=light&motion=static) · [About this counter](counter/README.md)
