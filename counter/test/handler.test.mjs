@@ -91,3 +91,15 @@ test('storage failure returns 503 without a fabricated zero or internal secrets'
     const body=await response.text();assert.doesNotMatch(body,/secret|GIF89a|\b0\b/);
   }
 });
+
+test('the one-time acceptance correction touches only the two identified test requests',async()=>{
+  const correction=await readFile(new URL('../netlify/database/migrations/202610270002_exclude_acceptance_requests.sql',import.meta.url),'utf8');
+  for(const [count,date,expected] of [['2','2026-10-27T08:01:49.028Z','0'],['3','2026-10-27T08:01:49.028Z','3'],['2','2026-10-28T08:01:49.028Z','2']]){
+    const {db,store}=await database();
+    try{
+      await db.query('INSERT INTO profile_counter (id,count,started_at,updated_at) VALUES ($1,$2,$3,$3)',['karmenloop',count,date]);
+      await db.exec(correction);assert.equal((await store.read()).count,expected);
+      await db.exec(correction);assert.equal((await store.read()).count,expected,'reapplying must not subtract again');
+    }finally{await db.close();}
+  }
+});
