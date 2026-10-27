@@ -8,6 +8,13 @@
 
 [官网](https://karmenloop.com) · [邮箱](mailto:info@karmenloop.com) · [发布约定](docs/publishing.zh-CN.md)
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://karmenloop-profile.netlify.app/profile.gif?lang=zh-CN&amp;theme=dark">
+  <img src="https://karmenloop-profile.netlify.app/profile.gif?lang=zh-CN&amp;theme=light" width="680" height="180" alt="KarmenLoop 主页访问估计值，搭配透明背景的原创银色动态折光体">
+</picture>
+
+[静态查看](https://karmenloop-profile.netlify.app/preview.gif?lang=zh-CN&theme=light&motion=static) · [计数说明](counter/README.zh-CN.md)
+
 ---
 
 ## 为什么做这些

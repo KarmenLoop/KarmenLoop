@@ -11,3 +11,17 @@ jobs:
         with:
           python-version: "3.12"
       - run: python scripts/check_docs.py
+  counter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: counter
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: counter/package-lock.json
+      - run: npm ci
+      - run: npm test

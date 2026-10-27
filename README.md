@@ -8,6 +8,13 @@ KarmenLoop builds [Koder](https://karmenloop.com) and a family of open repositor
 
 [Website](https://karmenloop.com) · [Email](mailto:info@karmenloop.com) · [Publishing conventions](docs/publishing.en.md)
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://karmenloop-profile.netlify.app/profile.gif?lang=en&amp;theme=dark">
+  <img src="https://karmenloop-profile.netlify.app/profile.gif?lang=en&amp;theme=light" width="680" height="180" alt="Estimated KarmenLoop profile views, with our animated silver refractive loop on a transparent background">
+</picture>
+
+[Static view](https://karmenloop-profile.netlify.app/preview.gif?lang=en&theme=light&motion=static) · [About this counter](counter/README.md)
+
 ---
 
 ## Why this exists

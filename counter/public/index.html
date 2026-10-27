@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark"><title>KARMEN LOOP · Profile counter</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#13151c;color:#f2f0eb;font:16px/1.55 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;transition:background .2s,color .2s}body.light{background:#f7f4ee;color:#1d1c1a}main{max-width:780px;margin:9vh auto;padding:28px}h1{font-size:26px;letter-spacing:-.025em;font-weight:550;margin:0 0 28px}nav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px}button,a{color:inherit}button{font:inherit;border:1px solid #7778;background:transparent;padding:7px 13px;border-radius:6px;cursor:pointer}button:hover{border-color:currentColor}button:focus-visible,a:focus-visible{outline:2px solid #6087ef;outline-offset:4px}button[aria-pressed=true]{border-color:currentColor}img{max-width:100%;height:auto;display:block}p{max-width:64ch;margin:24px 0}a{text-underline-offset:4px}::selection{background:#2455d3;color:white}.downloads{display:flex;flex-wrap:wrap;gap:22px;font-size:14px}.note{font-size:14px;color:#aaaab2}body.light .note{color:#5a5650}@media(max-width:480px){main{padding:18px;margin:4vh auto}h1{font-size:23px}}
+</style>
+<main>
+  <h1>KARMEN LOOP</h1>
+  <nav aria-label="Preview options"><button id="language" aria-pressed="false">简体中文</button><button id="theme" aria-pressed="false">Light background</button><button id="motion" aria-pressed="false">Pause motion</button></nav>
+  <img id="card" src="/preview.gif?lang=en&amp;theme=dark" width="680" height="180" alt="KarmenLoop profile view estimate with an animated silver loop">
+  <p id="description">An original refractive loop, rendered on a transparent background. This preview does not add a view.</p>
+  <div class="downloads"><a id="download" href="/karmen-loop.gif" download>Download transparent GIF</a><a id="static" href="/karmen-loop.png">Static loop</a><a href="https://github.com/KarmenLoop">GitHub</a></div>
+  <p class="note" id="note">The total estimates image requests received by the service. GitHub caches profile images, so it is not a count of unique people.</p>
+</main>
+<script>
+let zh=false,light=matchMedia('(prefers-color-scheme:light)').matches,paused=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const language=document.getElementById('language'),theme=document.getElementById('theme'),motion=document.getElementById('motion');
+function update(){document.documentElement.lang=zh?'zh-CN':'en';document.body.classList.toggle('light',light);language.textContent=zh?'English':'简体中文';language.setAttribute('aria-pressed',String(zh));theme.textContent=zh?(light?'深色背景':'浅色背景'):(light?'Dark background':'Light background');theme.setAttribute('aria-pressed',String(light));motion.textContent=zh?(paused?'播放动画':'暂停动画'):(paused?'Play motion':'Pause motion');motion.setAttribute('aria-pressed',String(paused));document.getElementById('card').src=`/preview.gif?lang=${zh?'zh-CN':'en'}&theme=${light?'light':'dark'}&motion=${paused?'static':'animated'}`;document.getElementById('card').alt=zh?'KarmenLoop 主页访问估计值及银色折光体':'KarmenLoop profile view estimate with a silver refractive loop';document.getElementById('description').textContent=zh?'原创折光体，透明背景。此预览不增加访问计数。':'An original refractive loop, rendered on a transparent background. This preview does not add a view.';document.getElementById('download').textContent=zh?'下载透明 GIF':'Download transparent GIF';document.getElementById('static').textContent=zh?'静态折光体':'Static loop';document.getElementById('note').textContent=zh?'累计值按服务收到的图片请求估算。GitHub 会缓存主页图片，因此数字不代表独立访客人数。':'The total estimates image requests received by the service. GitHub caches profile images, so it is not a count of unique people.';}
+language.onclick=()=>{zh=!zh;update()};theme.onclick=()=>{light=!light;update()};motion.onclick=()=>{paused=!paused;update()};update();
+</script>
+</html>
