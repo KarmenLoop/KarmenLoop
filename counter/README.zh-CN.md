@@ -2,7 +2,7 @@
 
 [English](README.md) | 简体中文 · [返回主页](../README.zh-CN.md)
 
-自托管的主页图片，使用 KARMEN LOOP 原创折光体。外部背景与环体中间的孔洞均透明；动画每六秒循环一次，数字保持稳定。
+自托管的主页图片，使用 KARMEN LOOP 原创折光体。外部背景与环体中间的孔洞均透明；波形沿环体持续流动，以每秒 20 帧、每六秒一轮播放。放大的折光体旁显示总浏览量，数字保持稳定。
 
 [预览与下载](https://karmenloop-profile.netlify.app) · [透明 GIF](https://karmenloop-profile.netlify.app/karmen-loop.gif) · [静态 PNG](https://karmenloop-profile.netlify.app/karmen-loop.png)
 
@@ -16,7 +16,7 @@ GIF 只有单一透明色，不支持半透明，所以边缘在深浅背景上�
 
 ## 本机使用
 
-当前版本 **1.0.0**，需要 Node **22 或以上**。在仓库内执行：
+当前版本 **1.1.0**，需要 Node **22 或以上**。在仓库内执行：
 
 ```sh
 cd counter
@@ -39,6 +39,6 @@ npm start
 
 部署前运行 `npm test`。在访问 `/preview.gif` 及对该预览接口发送 HEAD 请求前后读取 `/stats.json`，累计值应保持不变。不要对 `/profile.gif` 发 HEAD 来监测：托管代理会将其转换为 GET。并发写入测试使用独立数据库分支，不向正式图片批量发送请求。再次部署后确认累计值仍在，中英文主页同步更新。
 
-需要重新生成图像时，将官方 [Inter 可变字体](https://github.com/rsms/inter) 放到 `tmp/inter-variable.ttf`；系统没有中文字体时，通过 `COUNTER_CJK_FONT` 指定。随后运行 `npm run build:assets`。构建采用官网原生几何与材质，离线平滑渲染，生成 GIF、PNG、索引动画与文字图集。运行时不携带字体文件或账户凭据。Inter 许可保存在 [brand/inter-license.txt](brand/inter-license.txt)。
+需要重新生成图像时，将官方 [Inter 可变字体](https://github.com/rsms/inter) 放到 `tmp/inter-variable.ttf`；系统没有中文字体时，通过 `COUNTER_CJK_FONT` 指定。随后运行 `npm run build:assets`。构建沿用官网三瓣折光体，加入周期性表面流动、平滑反射与两倍超采样。独立素材为 640 × 640，计数卡为 720 × 260，共 120 帧、每帧 50 毫秒，生成 GIF、PNG、索引动画与文字图集。运行时不携带字体文件或账户凭据。Inter 许可保存在 [brand/inter-license.txt](brand/inter-license.txt)。
 
 存储不可用时，图片接口返回 HTTP 503，不显示虚构的零，也不重置记录。恢复数据库连接后重试。应用可以回滚部署，但不要删除或替换累计表。移除主页图片时，同步删除两个 README 中的 picture 块与静态入口；除非用户明确要求删除，否则保留历史记录。

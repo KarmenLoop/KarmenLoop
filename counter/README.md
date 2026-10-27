@@ -2,7 +2,7 @@
 
 English | [简体中文](README.zh-CN.md) · [Back to the profile](../README.md)
 
-A self-hosted profile image with KARMEN LOOP's original refractive form. The background and the opening through the loop are transparent. The animation runs for six seconds and repeats; the number stays still.
+A self-hosted profile image with KARMEN LOOP's original refractive form. The background and the opening through the loop are transparent. A travelling deformation moves through the surface at 20 frames per second in a six-second loop. The larger form sits beside the total profile views; the number stays still.
 
 [Preview and downloads](https://karmenloop-profile.netlify.app) · [Transparent GIF](https://karmenloop-profile.netlify.app/karmen-loop.gif) · [Static PNG](https://karmenloop-profile.netlify.app/karmen-loop.png)
 
@@ -16,7 +16,7 @@ GIF supports one transparent color rather than partial alpha, so its edges can l
 
 ## Run locally
 
-Version **1.0.0** requires Node **22 or later**. From this repository:
+Version **1.1.0** requires Node **22 or later**. From this repository:
 
 ```sh
 cd counter
@@ -39,6 +39,6 @@ The fixed routes are `/profile.gif` (counting), `/preview.gif` (read-only), `/st
 
 Run `npm test` before deploying. Verify `/stats.json` before and after using `/preview.gif`, including HEAD requests to that preview route: the total must not change. Do not use HEAD on `/profile.gif` for monitoring: the hosting proxy converts it to GET. Exercise concurrent writes against an isolated database branch, never by sending bulk requests to the production image. Confirm persistence after deploying again. Update both profile languages together.
 
-To rebuild artwork, place the official [Inter variable font](https://github.com/rsms/inter) at `tmp/inter-variable.ttf`, provide a Chinese font through `COUNTER_CJK_FONT` when the system has none, then run `npm run build:assets`. The build uses the site's native geometry and material with smooth offline shading. It produces the GIF, PNG, indexed animation, and text atlas. Font files and account credentials are not shipped with the renderer. The Inter license is retained in [brand/inter-license.txt](brand/inter-license.txt).
+To rebuild artwork, place the official [Inter variable font](https://github.com/rsms/inter) at `tmp/inter-variable.ttf`, provide a Chinese font through `COUNTER_CJK_FONT` when the system has none, then run `npm run build:assets`. The build refines the site's three-lobed form with periodic surface flow, smooth reflective shading, and two-times supersampling. It exports 640 × 640 artwork and a 720 × 260 counter with 120 frames at 50 ms per frame. It produces the GIF, PNG, indexed animation, and text atlas. Font files and account credentials are not shipped with the renderer. The Inter license is retained in [brand/inter-license.txt](brand/inter-license.txt).
 
 If storage fails, the image endpoint returns HTTP 503 and does not invent a zero or reset the record. Restore database access and retry. Roll back the application deploy without deleting or replacing the aggregate table. To remove the profile image, remove the picture block and its static-view link from both READMEs; preserve stored history unless the owner explicitly requests deletion.
