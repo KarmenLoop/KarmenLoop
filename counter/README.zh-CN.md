@@ -31,7 +31,7 @@ npm start
 
 以本文件夹建立独立 Netlify 项目，保留 `netlify.toml`。`@netlify/database` 依赖会配置 PostgreSQL，部署时应用已提交的迁移。部署前确认现有方案的额度；数据库地址与账户令牌不要提交进 Git。
 
-函数读取 Netlify 请求上下文，只允许正式部署计数。草稿部署使用独立数据库分支，图片接口只读，继续保持私有。正式图片需要无需登录即可访问，GitHub 才能读取。静态资源、图片请求及数据库使用消耗托管账户的常规额度。
+函数读取 Netlify 请求上下文，只允许正式部署计数。草稿部署显示空的只读预览，不连接正式数据库，继续保持私有。存储验收使用独立数据库分支。正式图片需要无需登录即可访问，GitHub 才能读取。静态资源、图片请求及数据库使用消耗托管账户的常规额度。
 
 固定接口为 `/profile.gif`（计数）、`/preview.gif`（只读）、`/stats.json`（只读）和 `/health`。图片选项为 `lang=en|zh-CN`、`theme=light|dark`、`motion=animated|static`。不提供重置接口或可选计数键。
 

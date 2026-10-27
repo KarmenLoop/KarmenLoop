@@ -70,6 +70,19 @@ test('a preview deployment never increments the production record',async()=>{
   }finally{await db.close();}
 });
 
+test('the deployed preview adapter never connects to the production database',async()=>{
+  const {default:handle}=await import('../netlify/functions/counter.mjs');
+  const previous=process.env.NETLIFY_DB_URL;
+  process.env.NETLIFY_DB_URL='postgres://invalid:invalid@127.0.0.1:1/unavailable?connect_timeout=1';
+  try{
+    for(const context of [{deploy:{context:'deploy-preview'}},undefined]){
+      const response=await handle(request('/stats.json'),context);
+      assert.equal(response.status,200);
+      assert.deepEqual(await response.json(),{count:'0',startedAt:null,updatedAt:null,measurement:'image requests',mode:'preview'});
+    }
+  }finally{if(previous===undefined)delete process.env.NETLIFY_DB_URL;else process.env.NETLIFY_DB_URL=previous;}
+});
+
 test('storage failure returns 503 without a fabricated zero or internal secrets',async()=>{
   const store={read:async()=>{throw Error('postgres://secret')},increment:async()=>{throw Error('postgres://secret')}};
   const handle=createHandler({store,render,production:true});

@@ -31,7 +31,7 @@ Open `http://127.0.0.1:55942`. Local preview uses a clearly labeled sample count
 
 Create a separate Netlify project from this folder and keep the included `netlify.toml`. The `@netlify/database` dependency provisions PostgreSQL; deployment applies the committed migration. Confirm your existing plan's limits before deploying. Do not put database URLs or account tokens in Git.
 
-The production function uses Netlify's request context to enable counting only on a production deploy. Draft deployments are read-only and use their own database branch. Keep preview deployments private. Make the production image reachable without login so GitHub can fetch it. The static assets and image requests use your hosting account's normal bandwidth and function/database allowance.
+The production function uses Netlify's request context to enable counting only on a production deploy. Draft deployments show an empty, read-only preview and never connect to the production database. Keep preview deployments private. Use a separate database branch for storage acceptance tests. Make the production image reachable without login so GitHub can fetch it. The static assets and image requests use your hosting account's normal bandwidth and function/database allowance.
 
 The fixed routes are `/profile.gif` (counting), `/preview.gif` (read-only), `/stats.json` (read-only), and `/health`. Image options are `lang=en|zh-CN`, `theme=light|dark`, and `motion=animated|static`. There is no reset endpoint or selectable counter key.
 
