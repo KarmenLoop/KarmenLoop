@@ -1,4 +1,4 @@
-export const DOWNLOAD_URL='https://github.com/KarmenLoop/koder-cli/releases/latest';
+export const DOWNLOAD_URL='https://kodermodule.com/cli-download.html';
 export const COPY_API='https://karmenloop-cli-copies.netlify.app';
 const prefix='koder-cli-copy-event:',uuidPattern=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 function eventValid(value){return value&&uuidPattern.test(value.eventId)&&['github','website'].includes(value.source)&&Object.keys(value).sort().join(',')==='eventId,source';}

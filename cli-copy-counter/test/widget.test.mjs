@@ -19,6 +19,7 @@ test('three successful clipboard writes produce three independent copies',async(
  const api=await service(),copied=[],states=[],queue=storage();
  try{const tracker=createCopyTracker({api:api.url,fetch:api.fetch,storage:queue,writeText:async text=>copied.push(text),onData:state=>states.push(state)});
   for(let i=0;i<3;i++){assert.equal((await tracker.copy('website')).copied,true);await tracker.flush();}
+  assert.equal(copied[0],'https://kodermodule.com/cli-download.html');
   assert.deepEqual(copied,[DOWNLOAD_URL,DOWNLOAD_URL,DOWNLOAD_URL]);assert.equal((await api.store.read()).count,'3');assert.equal(states.at(-1).count,'3');assert.equal(queue.length,0);
  }finally{await api.close();}
 });

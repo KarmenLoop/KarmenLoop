@@ -4,7 +4,7 @@ English | [简体中文](README.zh-CN.md)
 
 A separate count for successful uses of the Koder CLI download-link copy button. The CLI website and the copy page linked from GitHub share this total. One person copying three times adds three copies.
 
-The copied link is always the official [latest GitHub release](https://github.com/KarmenLoop/koder-cli/releases/latest). It opens the download page; the service does not mirror installers or run them.
+The button copies the [Koder CLI download page](https://kodermodule.com/cli-download.html). Installation packages, update metadata and current guides are published on the CLI website. The copy-count service records the action; it does not host or run installers.
 
 ## What counts
 

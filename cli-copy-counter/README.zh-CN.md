@@ -4,7 +4,7 @@
 
 专门统计 Koder CLI 下载链接复制按钮的成功使用次数。CLI 官网与 GitHub 引导进入的复制页共用这一累计值；同一个人复制三次，就增加三次。
 
-复制内容始终为官方 [GitHub 最新发行页](https://github.com/KarmenLoop/koder-cli/releases/latest)。打开后可选择下载；本服务不镜像安装包，也不执行安装程序。
+按钮复制 [Koder CLI 官网下载页](https://kodermodule.com/cli-download.html)。安装包、更新清单及当前教程均由 CLI 官网提供；复制统计服务只记录操作，不承载或运行安装程序。
 
 ## 统计口径
 
