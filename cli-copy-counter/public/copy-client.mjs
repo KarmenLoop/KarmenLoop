@@ -9,10 +9,10 @@ export function createCopyTracker({writeText,fetch:request=globalThis.fetch,stor
  function remove(event){pending.delete(event.eventId);try{storage.removeItem(prefix+event.eventId);}catch{}}
  async function flush(){
   if(flushing)return flushing;
-  flushing=(async()=>{restore();while(pending.size){const event=pending.values().next().value;
-   try{const response=await request(api+'/copies',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(event),keepalive:true,signal:AbortSignal.timeout(timeout),cache:'no-store'});if(!response.ok)throw Error('Copy recording unavailable');const data=validateState(await response.json());if(data.eventId!==event.eventId)throw Error('Copy receipt mismatch');remove(event);onData(data);onStatus({state:'recorded'});}
+  flushing=(async()=>{restore();const hadPending=pending.size>0;if(hadPending)onStatus({state:'pending'});while(pending.size){const event=pending.values().next().value;
+   try{const response=await request(api+'/copies',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(event),keepalive:true,signal:AbortSignal.timeout(timeout),cache:'no-store'});if(!response.ok)throw Error('Copy recording unavailable');const data=validateState(await response.json());if(data.eventId!==event.eventId)throw Error('Copy receipt mismatch');remove(event);onData(data);}
    catch{onStatus({state:'pending'});return false;}
-  }return true;})().finally(()=>{flushing=null;});return flushing;
+  }if(hadPending)onStatus({state:'recorded'});return true;})().finally(()=>{flushing=null;});return flushing;
  }
  async function copy(source='website'){
   if(!['github','website'].includes(source))throw Error('Unsupported entry');
