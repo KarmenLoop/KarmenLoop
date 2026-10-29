@@ -25,3 +25,17 @@ jobs:
           cache-dependency-path: counter/package-lock.json
       - run: npm ci
       - run: npm test
+  cli-copy-counter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cli-copy-counter
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: cli-copy-counter/package-lock.json
+      - run: npm ci
+      - run: npm test
